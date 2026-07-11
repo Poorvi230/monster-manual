@@ -1,31 +1,29 @@
 body {
     margin: 0;
      padding: 0;
-     background-color: #f4f4f0;
-     color: #1a1a1a;
-     font-family: 'Inter', Helvetics, sans-serif;
+     background-color: #f97316;
+     color: #1E3A8A;
+     font-family: 'Cinzel', sans-serif;
      overflow: hidden;
 }
 #ui-layer {
     position: absolute;
-    top: 30px; left: 40px;
+    top: 30px; width: 100%;
+    text-align: center;
     z-index: 10;
     user-select: none;
+    pointer-events: none;
 }
 #scoreEl {
     margin: 0;
-    font-size: 2.5rem;
+    font-size: 3rem;
     font-weight: 800;
-    letter-spacing: -1px;
-    color: #1a1a1a;
 }
 #healthEl {
     margin: 5px 0 0 0;
-    font-size: 1.2rem;
+    font-size: 1.5rem;
     font-weight: 700;
-    color: #00853E;
-    text-transform: uppercase;
-    letter-spacing: 2px;
+    color: #166534;
 }
 canvas {
     display: block;
