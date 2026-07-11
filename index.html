@@ -1,27 +1,31 @@
 <!DOCTYPE html>
-<html lange="en">
-    <head> 
+    <html lang="en">
+    <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Demigod Dashboard</title>
-        <!--some cool  greek font hell yea-->
-        <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Inter:wght@400; 700&display=swap"
-     rel="stylesheet">
+        <title>Camp Half-Blood</title>
+        <!-- cool greek font -->
+        <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800&family=Outfit:wght@400;700&display=swap" 
+        rel="stylesheet">
         <link rel="stylesheet" href="style.css">
     </head>
     <body>
 
-        <header>
-            <h1>Demigod Survival Dashboard</h1>
-            <p>Monsters cooked: <span id="ScoreCounter">0</span></p>
+        <header class="hud-header">
+            <h1>Camp Half-Blood</h1>
+            <p>Cook some Monsters for Dinner MAN!!</p>
         </header>
+        <div class="map-wrapper">
+          <img src="Camp-Map.png" alt="Camp Map" class="high-res-map">
 
-    <!--map area-->
-    <div class="map-arena">
-        <img src="Camp-map.jpeg" alt="Camp Map" class="camp-map">
-        <div class="star" id="thalias-tree" style="top: 30%; left: 50%;"></div>
-    </div>
+          <div class="star" id="thalias-tree" style="top: 25%; left: 45%;">⭐</div>
+        </div>
+        <div id="info-scroll" class="scroll-popup hidden">
+            <button id="close-btn" class="close-btn">X</button>
+            <h2 id="scroll-title">Location Name</h2>
+            <p id="scroll-text">Location description will go here...</p>
+        </div>
 
-    <script src="app.js"></script>
+        <script src="app.js"></script>
     </body>
-</html>
+    </html>
