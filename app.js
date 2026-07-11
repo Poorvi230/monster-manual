@@ -1,11 +1,23 @@
    const scoreEl = document.getElementById('scoreEl');
    let score = 0;
 
+   const waveEl = document.getElementById('waveEl');
+   let wave = 1;
+   let requiredScoreForNextWave = 10;
+   let spawnRate = 2500;
+   let monsterSpeed = 0.5;
+   let spawnerInterval;
+
    const healthEl = document.getElementById('healthEl');
    const gameOverUI = document.getElementById('gameOverUI');
    let health = 100;
    
    const canvas = document.getElementById('gameCanvas');
+
+   const lightningEl = document.getElementById('lightningEl');
+   let lightningReady = true;
+   let flashAlpha = 0;
+
     const ctx = canvas.getContext('2d');
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
@@ -56,24 +68,27 @@
             ctx.drawImage(monsterImg, this.x - this.size/2, this.y - this.size/2, this.size, this.size);
 
             const angle = Math.atan2(centerY -  this.y, centerX - this.x);
-            this.x += Math.cos(angle) * 0.5;
-            this.y += Math.sin(angle) * 0.5;
+            this.x += Math.cos(angle) * monsterSpeed;
+            this.y += Math.sin(angle) * monsterSpeed;
         }
     }
+    
     function spawnEnemies() {
-        setInterval(() => {
+         clearInterval(spawnerInterval);
+         spawnerInterval = setInterval(() => {
             let x, y;
 
             if (Math.random() < 0.5) {
-                x = Math.random() < 0.5 ? -50 : canvas.width + 50;
-                y = Math.random() * canvas.height;
-            } else {
-                x = Math.random() * canvas.width;
-                y = Math.random() < 0.5 ? -50 : canvas.height + 50;
-            }
-            enemies.push(new Enemy(x, y));
-        }, 900);
-    }
+                    x = Math.random() < 0.5 ? -50 : canvas.width + 50;
+                    y = Math.random() * canvas.height;
+                } else {
+                    x = Math.random() * canvas.width;
+                    y = Math.random() < 0.5 ? -50 : canvas.height + 50;
+                }
+                enemies.push(new Enemy(x, y));
+
+            }, spawnRate); 
+        }
 
     // --daggersssssss-----
     class Projectile {
@@ -114,6 +129,29 @@
         projectiles.push(new Projectile(centerX, centerY, velocity));
     });
 
+    const cooldownBar = document.getElementById('cooldownBar');
+
+    window.addEventListener('keydown', (e) => {
+        if (e.code === 'Space' && lightningReady) {
+
+            score += enemies.length;
+            enemies.length = `Monsters Cooked: ${score}`;
+            enemies.length = 0;
+            flashAlpha = 1;
+            cooldownBar.style.transition = 'none';
+            cooldownBar.style.width = '0%'
+
+            setTimeout(() => {
+                cooldownBar.style.transition = 'width 10s linear';
+                cooldownBar.style.width = '100%';
+            }, 50);
+
+            setTimeout(() => {
+                lightningReady = true;
+            }, 10000);
+        }
+    });
+
     // -- game loop -
     function animate() {
        let animationId = requestAnimationFrame(animate);
@@ -134,6 +172,12 @@
             ctx.lineTo(canvas.width, y);
         }
         ctx.stroke();
+
+        if (flashAlpha > 0) {
+            ctx.fillStyle = `rgba(255, 255, 255, ${flashAlpha})`;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            flashAlpha -= 0.05;
+        }
 
         ctx.drawImage(treeImg, centerX -250, centerY -250, 500, 500);
 
@@ -157,6 +201,20 @@
 
                  score += 1;
                  scoreEl.innerHTML = `Monsters Cooked: ${score}`;
+               }
+               if (score >= requiredScoreForNextWave) {
+                wave += 1;
+                if (wave < 3) {
+                    requiredScoreForNextWave += 5;
+                } else {
+                    requiredScoreForNextWave += 10;
+                }
+
+                monsterSpeed += 0.2;
+                if (spawnRate > 600) spawnRate -= 400;
+
+                waveEl.innerHTML = `Wave: ${wave}`
+                spawnEnemies();
                }
             });
             const distToTree = Math.hypot(centerX - enemy.x, centerY - enemy.y);
