@@ -3,7 +3,7 @@
 
    const waveEl = document.getElementById('waveEl');
    let wave = 1;
-   let requiredScoreForNextWave = 10;
+   let requiredScoreForNextWave = 5;
    let spawnRate = 2500;
    let monsterSpeed = 0.5;
    let spawnerInterval;
@@ -135,7 +135,7 @@
         if (e.code === 'Space' && lightningReady) {
 
             score += enemies.length;
-            enemies.length = `Monsters Cooked: ${score}`;
+            scoreEl.innerHTML = `Monsters Cooked: ${score}`;
             enemies.length = 0;
             flashAlpha = 1;
             cooldownBar.style.transition = 'none';
@@ -156,7 +156,7 @@
     function animate() {
        let animationId = requestAnimationFrame(animate);
 
-        ctx.fillStyle = 'rgba(249, 115, 22, 0.4)';
+        ctx.fillStyle = 'rgba(202, 102, 31, 0.4)';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
 
         ctx.beginPath();
@@ -201,8 +201,7 @@
 
                  score += 1;
                  scoreEl.innerHTML = `Monsters Cooked: ${score}`;
-               }
-               if (score >= requiredScoreForNextWave) {
+                 if (score >= requiredScoreForNextWave) {
                 wave += 1;
                 if (wave < 3) {
                     requiredScoreForNextWave += 5;
@@ -215,6 +214,7 @@
 
                 waveEl.innerHTML = `Wave: ${wave}`
                 spawnEnemies();
+                 }
                }
             });
             const distToTree = Math.hypot(centerX - enemy.x, centerY - enemy.y);
