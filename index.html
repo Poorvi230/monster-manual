@@ -10,25 +10,15 @@
         <link rel="stylesheet" href="style.css">
     </head>
     <body>
-
-        <header class="hud-header">
-            <h1>Camp Half-Blood</h1>
-            <p>Cook some Monsters for Dinner MAN!!</p>
-        </header>
-        <div class="map-wrapper">
-          <img src="Camp-Map.png" alt="Camp Map" class="high-res-map">
-
-          <div class="star" id="thalias-tree" style="top: 45.7%; left: 86.5%;">⭐</div>
-          <div class="star" id="canoe-lake" style="top: 37%; left: 68.5%;">⭐</div>
-          <div class="star" id="combat-area" style="top: 68%; left: 41.5%">⭐</div>
-          <div class="star" id="big-house" style="top: 78%; left:61%">⭐</div>
-          <div class="star" id="long-island" style="top: 13.5%; left: 17.5%;">⭐</div>
+        <div id="ui-layer">
+            <h1 id="scoreEl">Monsters Defeated: 0</h1>
+            <h2 id="healthEl">Tree Health: 100%</h2>
         </div>
-        <div id="info-scroll" class="scroll-popup hidden">
-            <button id="close-btn" class="close-btn">X</button>
-            <h2 id="scroll-title">Location Name</h2>
-            <p id="scroll-text">Location description will go here...</p>
-        </div>
+
+        <canvas id="gameCanvas"></canvas>
+
+        <script src="app.js"></script>
+    </body>
 
         <script src="app.js"></script>
     </body>

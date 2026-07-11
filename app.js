@@ -1,56 +1,42 @@
- document.querySelector('.high-res-map').addEventListener('click', (event) =>
-  {
-        const mapBox = event.target.getBoundingClientRect();
-        const leftPercent = ((event.clientX - mapBox.left) / mapBox.width) * 100;
-        const topPercent = ((event.clientY - mapBox.top) / mapBox.height) * 100;
+const canvas = document.getElementById('gameCanvas');
+const ctx = canvas.getContext('2d');
 
-        alert(`left: ${leftPercent.toFixed(1)}%; top: ${topPercent.toFixed(1)}%;
-  `);
-    });
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
 
-const infoScroll = document.getElementById('info-scroll');
-const closeBtn = document.getElementById('close-btn');
+const centerX = canvas.innerWidth / 2;
+const centerY = canvas.innerheight / 2;
 
-const scrollTitle = document.getElementById('scroll-title');
-const scrollText = document.getElementById('scroll-text');
+window.addEventListener('resize', () => {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+});
 
-//Lores DataBaseee
-const campDatabase = { 'thalias-tree': {
-    title: "Thalia's Pine Tree",
-    lore: `Guarded by <span class="magic-word" data-lore= "A copper-colored dragon.">Peleus</span>. It projects a magical border. Created from the sould of <span class="magic word" data-lore="Daughter of Zeus.">Thalia Grace</span>`
-},
-'canoe-lake': {
-      title: "The Canoe Lake",
-      lore: `Home to the <span class="magic-word" data-lore="Water spirits who love to flirt and drown things.">Naiads</sapn>. A great place to relax, just don't litter(if u don't wanna drown).`
-},
-'combat-area': {
-    title: "The Arena",
-    lore: `Where demigods learn to not die. Watch out for the <span class="magic-word" data-lore="Children of the War God. Do not steal their lunch money.">Ares Cabin</span>-they treat sparring like it's a fight to death.`
-},
-'big-house': {
-    title: "The Big House",
-    lore: `Camp HQ! Inside you'll find <span class="magic-word" data-lore="The immortal camp director (he's a centaur)".>Chiron</span> playing pinochle and Mr. D heavily sighing over a diet Coke. Watch out for the leopard head.`
-},
-'long-island': {
-    title: "Long Island Sound",
-    lore: `The vast waters stretching beyond camp. Deep down, <span class="magic-word" data-lore="God of the Sea, Earthshaker, Strombringer.">Poseidon's</span> world lies. Good luck if u wanna swim.`
-}
- };
-
- const allStars = document.querySelectorAll('.star');
-
- allStars.forEach(star => {
- star.addEventListener('click', (event) => {
-    const clickedId = event.target.id;
-    const locationInfo = campDatabase[clickedId];
-
-    if(locationInfo) {
-        scrollTitle.textContent = locationInfo.title;
-        scrollText.innerHTML = locationInfo.lore;
-        infoScroll.classList.remove('hidden');
+//--blueprint classes--
+class Player {
+    constructor(x, y, radius, color) {
+        this.x = x;
+        this.y = y;
+        this.radius = radius;
+        this.color = color;
     }
- });
- });
- closeBtn.addEventListener('click', () => {
-    infoScroll.classList.add('hidden');
- });
+    draw() {
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false);
+        ctx.fillStyle = this.color;
+        ctx.fill();
+
+        ctx.lineWidth = 4;
+        ctx.strokeStyle = '#c5832b'
+        ctx.stroke();
+    }
+}
+const player = new Player(centerX, centerY, 20, 'white');
+
+function animate() {
+requestAnimationFrame(animate);
+
+ctx.fillStyle = 'rgba(5, 5, 16, 1)';
+ctx.fillRect(0, 0, canvas.width, canvas,height);
+player.draw();
+}
