@@ -5,8 +5,8 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Demigod Dashboard</title>
         <!--some cool  greek font hell yea-->
-        <link href="https://fonts.googleapis.come/css2?family=Cinzel:wght@700&family=Inter:wght@400; 700&display=swap"
-        rel="stylesheet"
+        <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Inter:wght@400; 700&display=swap"
+     rel="stylesheet">
         <link rel="stylesheet" href="style.css">
     </head>
     <body>
@@ -16,31 +16,12 @@
             <p>Monsters cooked: <span id="ScoreCounter">0</span></p>
         </header>
 
-        <div class="main-conatiner">
-            <div class="sidebar"></div>
-            <button id="randomeBtn" class="action-btn">Look around the woods🌲</button>
-
-            <h2>Known Threats ofc</h2>
-            <div id="monsterList" class="monster-list"></div>
-        </div>
-
-        <div class="arena" id="arena">
-            <h2 id="monsterName">Camp Borders are Quiet...</h2>
-            <p id="monsterType" class="type-tag">Status: Safe</p>
-
-            <div class="danger-section">
-                <p>Danger Level: <span id="dangerText">0</span>/10</p>
-            <div class="danger-bar-background">
-                <div class="danger-bar-fill" id="dangerFill"></div>
-            </div>
-        </div>
-
-        <p id="monsterDescription">Click 'Look Around the Woods' or select a known threat from the list to begin.</p>
-
-        <button id="defeatBtn" class="action-btn defeat-btn hidden"> ⚔️ DEFEAT!!!⚔️</button>
-        </div>
+    <!--map area-->
+    <div class="map-arena">
+        <img src="Camp-map.jpeg" alt="Camp Map" class="camp-map">
+        <div class="star" id="thalias-tree" style="top: 30%; left: 50%;"></div>
     </div>
 
-    <script src="script.js"></script>
+    <script src="app.js"></script>
     </body>
 </html>
