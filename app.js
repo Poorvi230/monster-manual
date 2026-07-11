@@ -1,3 +1,10 @@
+   const scoreEl = document.getElementById('scoreEl');
+   let score = 0;
+
+   const healthEl = document.getElementById('healthEl');
+   const gameOverUI = document.getElementById('gameOverUI');
+   let health = 100;
+   
    const canvas = document.getElementById('gameCanvas');
     const ctx = canvas.getContext('2d');
     canvas.width = window.innerWidth;
@@ -8,10 +15,10 @@
 
     const projectiles = [];
     const treeImg = new Image();
-    treeImg.src = 'tree.jpg';
+    treeImg.src = 'tree.png';
 
     const playerImg = new Image();
-    playerImg.src = 'dmg.webp';
+    playerImg.src = 'dmg.png';
 
      const monsterImg = new Image();
      monsterImg.src = 'monster.png';
@@ -31,7 +38,7 @@
             ctx.translate(this.x, this.y);
             ctx.rotate(this.angle);
 
-           ctx.drawImage(playerImg, -45, -45, 90, 90);
+           ctx.drawImage(playerImg, -50, -60, 120, 120);
 
             ctx.restore();
         }
@@ -43,7 +50,7 @@
         constructor(x, y) {
             this.x = x;
             this.y = y;
-            this.size = 80;
+            this.size = 120;
         }
         update() {
             ctx.drawImage(monsterImg, this.x - this.size/2, this.y - this.size/2, this.size, this.size);
@@ -65,7 +72,7 @@
                 y = Math.random() < 0.5 ? -50 : canvas.height + 50;
             }
             enemies.push(new Enemy(x, y));
-        }, 2500);
+        }, 900);
     }
 
     // --daggersssssss-----
@@ -109,10 +116,24 @@
 
     // -- game loop -
     function animate() {
-        requestAnimationFrame(animate);
+       let animationId = requestAnimationFrame(animate);
 
         ctx.fillStyle = 'rgba(249, 115, 22, 0.4)';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        ctx.beginPath();
+        ctx.lineWidth = 2;
+        ctx.strokeStyle = 'rgba(34, 197, 94, 0.4)';
+
+        for (let x = 0; x < canvas.width; x += 40) {
+            ctx.moveTo(x, 0);
+            ctx.lineTo(x, canvas.height);
+        }
+        for (let y = 0; y < canvas.height; y += 40) {
+            ctx.moveTo(0, y);
+            ctx.lineTo(canvas.width, y);
+        }
+        ctx.stroke();
 
         ctx.drawImage(treeImg, centerX -250, centerY -250, 500, 500);
 
@@ -125,8 +146,33 @@
                 projectiles.splice(index, 1);
             }
         });
-        enemies.forEach(enemy => {
+        enemies.forEach((enemy, enemyIndex) => {
             enemy.update();
+            projectiles.forEach((proj, projIndex) => {
+               const dist = Math.hypot(proj.x - enemy.x, proj.y - enemy.y);
+
+               if (dist - enemy.size / 2 - proj.radius < 1) {
+                 projectiles.splice(projIndex, 1);
+                 enemies.splice(enemyIndex, 1);
+
+                 score += 1;
+                 scoreEl.innerHTML = `Monsters Cooked: ${score}`;
+               }
+            });
+            const distToTree = Math.hypot(centerX - enemy.x, centerY - enemy.y);
+            if (distToTree < 100) {
+                enemies.splice(enemyIndex, 1);
+                    health -= 20;
+                    healthEl.innerHTML = `Tree Health: ${health}%`;
+
+                    if (health <= 0) {
+                        healthEl.innerHTML = `Tree's API Credits: 0%`;
+                        document.getElementById('finalScore').innerText = `Monster Cooked: ${score}`;
+                        gameOverUI.classList.remove('hidden');
+
+                        cancelAnimationFrame(animationId);
+                    }
+            }
         });
     }
      spawnEnemies();

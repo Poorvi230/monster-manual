@@ -5,14 +5,19 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Camp Half-Blood</title>
         <!-- cool greek font -->
-        <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800&family=Outfit:wght@400;700&display=swap" 
-        rel="stylesheet">
+         <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" 
+         rel="stylesheet">
         <link rel="stylesheet" href="style.css">
     </head>
     <body>
         <div id="ui-layer">
             <h1 id="scoreEl">Monsters Defeated: 0</h1>
             <h2 id="healthEl">Tree Health: 100%</h2>
+        </div>
+        <div id="gameOverUI" class="hidden">
+            <h1 style="color: #ff4444; font-size: 4rem; margin: 0;">The Tree died bruh 🥀</h1>
+            <h2 id="finalScore">Monster Cooked: 0</h2>
+            <button onclick="location.reload()" class-="action-btn">SKILL ISSUE 🤡</button>
         </div>
 
         <canvas id="gameCanvas"></canvas>
