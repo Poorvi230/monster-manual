@@ -160,6 +160,20 @@
                         memePopup.classList.add('hidden');
                         memeAudio.pause();
                     }, 3500);
+                } 
+                if (wave === 18) {
+                    const wave18Audio = document.getElementById('wave18Audio');
+                    wave18Audio.currentTime = 0;
+                    wave18Audio.play();
+
+                    setTimeout(() => {
+                    wave18Audio.pause();
+                    }, 4000);
+                }
+                if (wave === 26) {
+                    const wave25Audio = document.getElementById('wave25Audio');
+                    wave25Audio.currentTime = 0;
+                    wave25Audio.play();
                 }
 
                 if (wave < 6) {
@@ -222,16 +236,26 @@
     });
 
     // dagger shootinh 
-    window.addEventListener('click', (e) => {
-        const angle = Math.atan2(e.clientY - centerY, e.clientX - centerX);
-       
+    let shootInterval;
+
+    function fireDagger() {
         const velocity = {
-            x: Math.cos(angle) * 8, // itsspeed
-            y: Math.sin(angle) * 8
+            x: Math.cos(player.angle) * 8,
+            y: Math.sin(player.angle) * 8
         };
         projectiles.push(new Projectile(centerX, centerY, velocity));
         playPew();
+    }
+    window.addEventListener('mousedown', () => {
+        fireDagger();
+
+        shootInterval = setInterval(() => {
+            fireDagger();
+        }, 80);
     });
+    window.addEventListener('mouseup', () => {
+              clearInterval(shootInterval);
+    })
 
     const cooldownBar = document.getElementById('cooldownBar');
 
