@@ -1,3 +1,74 @@
+   const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+   setTimeout(() => {
+    document.getElementById('zeusToast').style.opacity = '0';
+   }, 4000);
+
+   function playPew() {
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.type = 'square';
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+
+    osc.frequency.setValueAtTime(800, audioCtx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(100, audioCtx.currentTime + 0.1);
+
+    gain.gain.setValueAtTime(0.05, audioCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
+
+    osc.start();
+    osc.stop(audioCtx.currentTime + 0.1);
+   }
+
+   function playBoom() {
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+    const bufferSize = audioCtx.sampleRate * 0.2;
+    const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+    const data = buffer.getChannelData(0);
+
+    for (let i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1;
+    
+    const noise = audioCtx.createBufferSource();
+    noise.buffer = buffer;
+
+    const filter = audioCtx.createBiquadFilter();
+    filter.type = 'lowpass';
+    filter.frequency.setValueAtTime(1000, audioCtx.currentTime);
+    filter.frequency.exponentialRampToValueAtTime(100, audioCtx.currentTime + 0.2);
+
+    const gain = audioCtx.createGain();
+    gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.2);
+
+    noise.connect(filter).connect(gain).connect(audioCtx.destination);
+    noise.start();
+   }
+
+   function playThunder() {
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+    const bufferSize = audioCtx.sampleRate * 1.5;
+    const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+    const data = buffer.getChannelData(0);
+    for (let i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1;
+
+    const noise = audioCtx.createBufferSource();
+    noise.buffer = buffer;
+
+    const filter = audioCtx.createBiquadFilter();
+    filter.type = 'lowpass';
+    filter.frequency.setValueAtTime(800, audioCtx.currentTime);
+    filter.frequency.exponentialRampToValueAtTime(50, audioCtx.currentTime + 1.5);
+
+    const gain = audioCtx.createGain();
+    gain.gain.setValueAtTime(0.8, audioCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 1.5);
+
+    noise.connect(filter).connect(gain).connect(audioCtx.destination);
+    noise.start();
+   }
+   
    const scoreEl = document.getElementById('scoreEl');
    let score = 0;
 
@@ -72,7 +143,39 @@
             this.y += Math.sin(angle) * monsterSpeed;
         }
     }
+    function checkWave() {
     
+            while (score >= requiredScoreForNextWave) {
+                wave += 1;
+               
+                if (wave === 7) {
+                    const memePopup = document.getElementById('memePopup');
+                    const memeAudio = document.getElementById('memeAudio');
+
+                    memePopup.classList.remove('hidden');
+                    memeAudio.currentTime = 0;
+                    memeAudio.play();
+
+                    setTimeout(() => {
+                        memePopup.classList.add('hidden');
+                        memeAudio.pause();
+                    }, 3500);
+                }
+
+                if (wave < 6) {
+                    requiredScoreForNextWave += 5;
+                } else {
+                    requiredScoreForNextWave += 10;
+                }
+
+                monsterSpeed += 0.2;
+                if (spawnRate > 600) spawnRate -= 400;
+
+                waveEl.innerHTML = `WAVE: ${wave}`;
+                spawnEnemies();
+            }
+        }
+
     function spawnEnemies() {
          clearInterval(spawnerInterval);
          spawnerInterval = setInterval(() => {
@@ -127,17 +230,22 @@
             y: Math.sin(angle) * 8
         };
         projectiles.push(new Projectile(centerX, centerY, velocity));
+        playPew();
     });
 
     const cooldownBar = document.getElementById('cooldownBar');
 
     window.addEventListener('keydown', (e) => {
         if (e.code === 'Space' && lightningReady) {
-
+             
+            lightningReady = false;
             score += enemies.length;
             scoreEl.innerHTML = `Monsters Cooked: ${score}`;
+            checkWave();
             enemies.length = 0;
             flashAlpha = 1;
+            playThunder();
+
             cooldownBar.style.transition = 'none';
             cooldownBar.style.width = '0%'
 
@@ -148,6 +256,13 @@
 
             setTimeout(() => {
                 lightningReady = true;
+
+                const toast = document.getElementById('zeusToast');
+                toast.style.opacity = '1';
+
+                setTimeout(() => {
+                    toast.style.opacity = '0';
+                }, 4000);
             }, 10000);
         }
     });
@@ -201,20 +316,8 @@
 
                  score += 1;
                  scoreEl.innerHTML = `Monsters Cooked: ${score}`;
-                 if (score >= requiredScoreForNextWave) {
-                wave += 1;
-                if (wave < 3) {
-                    requiredScoreForNextWave += 5;
-                } else {
-                    requiredScoreForNextWave += 10;
-                }
-
-                monsterSpeed += 0.2;
-                if (spawnRate > 600) spawnRate -= 400;
-
-                waveEl.innerHTML = `Wave: ${wave}`
-                spawnEnemies();
-                 }
+                 playBoom();
+                 checkWave();
                }
             });
             const distToTree = Math.hypot(centerX - enemy.x, centerY - enemy.y);
@@ -222,16 +325,22 @@
                 enemies.splice(enemyIndex, 1);
                     health -= 20;
                     healthEl.innerHTML = `Tree Health: ${health}%`;
-
-                    if (health <= 0) {
-                        healthEl.innerHTML = `Tree's API Credits: 0%`;
-                        document.getElementById('finalScore').innerText = `Monster Cooked: ${score}`;
-                        gameOverUI.classList.remove('hidden');
-
-                        cancelAnimationFrame(animationId);
-                    }
             }
-        });
+        }); if (health <= 0) {
+            healthEl.innerHTML = `Tree's API Credits: 0%`;
+            document.getElementById('finalScore').innerText = `Monsters Cooked: ${score}`;
+            gameOverUI.classList.remove('hidden');
+
+            cancelAnimationFrame(animationId);
+
+            const gameOverAudio = document.getElementById('gameOverAudio');
+            gameOverAudio.currentTime = 0;
+            gameOverAudio.play();
+            
+            setTimeout(() => {
+                 gameOverAudio.pause();
+            }, 3500);
+        }
     }
      spawnEnemies();
     animate();
