@@ -1,4 +1,4 @@
-# Camp Half-Blood — Monster Manual
+# Camp Half-Blood's Monster Manual
 
 so the original idea was to build a greek monsters manual. like a digital index inspired by rick riordans percy jackson books, I spent basically all of junior grades reading those and they taught me way too much about how to kill mythological creatures, lol. 
 So I wanted to make a slick UI where you could flip through entries for every monster in the series.
