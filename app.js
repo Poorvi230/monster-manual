@@ -89,6 +89,11 @@
    let lightningReady = true;
    let flashAlpha = 0;
 
+   let darknessAlpha = 0;
+   let isNight = false;
+   let mouseX = window.innerWidth / 2;
+   let mouseY = window.innerHeight / 2;
+
     const ctx = canvas.getContext('2d');
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
@@ -111,7 +116,7 @@
 
     const enemies = [];
 
-    // --- demigod/ player view--
+    // --- demigod view--
     class Player {
         constructor(x, y) {
             this.x = x;
@@ -186,22 +191,7 @@
                         memePopup.classList.add('hidden');
                         memeAudio.pause();
                     }, 3500);
-                } 
-                if (wave === 18) {
-                    const wave18Audio = document.getElementById('wave18Audio');
-                    wave18Audio.currentTime = 0;
-                    wave18Audio.play();
-
-                    setTimeout(() => {
-                    wave18Audio.pause();
-                    }, 4000);
                 }
-                if (wave === 26) {
-                    const wave25Audio = document.getElementById('wave25Audio');
-                    wave25Audio.currentTime = 0;
-                    wave25Audio.play();
-                }
-
                 if (wave < 6) {
                     requiredScoreForNextWave += 5;
                 } else {
@@ -266,6 +256,13 @@
         player.angle = angle;
     });
 
+    window.addEventListener('mousemove', (e) => {
+        const angle = Math.atan2(e.clientY - centerY, e.clientX - centerX);
+        player.angle = angle;
+        mouseX = e.clientX;
+        mouseY = e.clientY;
+    });
+
     // dagger shootinh 
     let shootInterval;
 
@@ -277,11 +274,18 @@
         projectiles.push(new Projectile(centerX, centerY - 40, velocity));
         playPew();
     }
-        window.addEventListener('click', () => {
-           fireDagger();
+ window.addEventListener('mousedown', () => {
+            fireDagger(); 
+            shootInterval = setInterval(() => {
+                fireDagger();
+            }, 90);
         });
 
-    // --- ZEUS'S WRATH (SPACEBAR) ---
+        window.addEventListener('mouseup', () => {
+            clearInterval(shootInterval);
+        });
+
+    // --- zeus boi---
     const cooldownBar = document.getElementById('cooldownBar');
 
     window.addEventListener('keydown', (e) => {
@@ -389,7 +393,40 @@
                     health -= 20;
                     healthEl.innerHTML = `Tree Health: ${health}%`;
                 }
-            });
+            }); 
+            if (isNight && darknessAlpha < 0.95) darknessAlpha += 0.005;
+            if (!isNight && darknessAlpha > 0) darknessAlpha -= 0.005;
+
+            if (darknessAlpha > 0) {
+                ctx.save();
+
+                ctx.globalCompositeOperation = 'source-over';
+                ctx.fillStyle = `rgba(0, 5, 10, ${darknessAlpha})`;
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                ctx.globalCompositeOperation = 'destination-out';
+                const gradient = ctx.createRadialGradient(mouseX, mouseY, 0, mouseX, mouseY, 250);
+                gradient.addColorStop(1, 'rgba(0, 0, 0, 0)');
+
+                ctx.fillStyle = gradient;
+                ctx.beginPath();
+                ctx.arc(mouseX, mouseY, 250, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.restore();
+
+                if (darknessAlpha > 0.5) {
+                    enemies.forEach(enemy => {
+                        ctx.fillStyle = 'rgba(255, 0, 0, 0.9)';
+                        ctx.shadowColor = 'red';
+                        ctx.shadowBlur = 10;
+                        ctx.beginPath();
+                        ctx.arc(enemy.x - 12, enemy.y - 10, 4, 0, Math.PI * 2);
+                        ctx.arc(enemy.x + 12, enemy.y - 10, 4, 0, Math.PI * 2);
+                        ctx.fill();
+                        ctx.shadowBlur = 0;
+                    });
+                }
+            }
             if (health <= 0) {
                 healthEl.innerHTML = `Tree's API Credits: 0%`;
                 document.getElementById('finalScore').innerText = `Monsters Cooked: ${score}`;
@@ -413,4 +450,8 @@
             if (audioCtx.state === 'suspended') audioCtx.resume();
             spawnEnemies();
             animate();
+
+            setInterval(() => {
+                isNight = !isNight;
+            }, 15000);
         });
