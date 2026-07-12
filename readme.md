@@ -62,7 +62,7 @@ vanilla js on html5 canvas, no frameworks. projectiles are objects in an array d
 
 ## ai usage
 
-ai helped me figure out the canvas compositing for the night vision and the biquad filter setup for the thunder sound.
+It helped with the night vision canvas and thunder sound filter since those were tricky yeah
 
 ## a note on the original idea
 
