@@ -106,6 +106,9 @@
      const monsterImg = new Image();
      monsterImg.src = 'monster.png';
 
+     const minoImg = new Image();
+     minoImg.src = 'mino.png';
+
     const enemies = [];
 
     // --- demigod/ player view--
@@ -141,6 +144,29 @@
             const angle = Math.atan2(centerY -  this.y, centerX - this.x);
             this.x += Math.cos(angle) * monsterSpeed;
             this.y += Math.sin(angle) * monsterSpeed;
+        }
+    }
+    class Minotaur {
+        constructor(x, y) {
+            this.x = x;
+            this.y = y;
+            this.size = 220;
+            this.health = 5;
+            this.maxHealth = 5;
+            this.speed = monsterSpeed * 0.4;
+        }
+        update() {
+            ctx.fillStyle = 'rgba(255, 0, 0, 0.8)';
+            ctx.fillRect(this.x - 40, this.y - 100, 80, 8);
+
+            ctx.fillStyle = '#22c55e';
+            ctx.fillRect(this.x - 40, this.y - 100, 80 * (this.health / this.maxHealth), 8);
+
+           ctx.drawImage(minoImg, this.x - this.size/2, this.y - this.size/2, this.size, this.size);
+
+            const angle = Math.atan2(centerY - this.y, centerX - this.x);
+            this.x += Math.cos(angle) * this.speed;
+            this.y += Math.sin(angle) * this.speed;
         }
     }
     function checkWave() {
@@ -190,23 +216,28 @@
             }
         }
 
-    function spawnEnemies() {
-         clearInterval(spawnerInterval);
-         spawnerInterval = setInterval(() => {
-            let x, y;
+ function spawnEnemies() {
+             clearInterval(spawnerInterval);
 
-            if (Math.random() < 0.5) {
+             spawnerInterval = setInterval(() => {
+                let x, y;
+
+                if (Math.random() < 0.5) {
                     x = Math.random() < 0.5 ? -50 : canvas.width + 50;
                     y = Math.random() * canvas.height;
                 } else {
                     x = Math.random() * canvas.width;
                     y = Math.random() < 0.5 ? -50 : canvas.height + 50;
                 }
-                enemies.push(new Enemy(x, y));
 
-            }, spawnRate); 
+                if (wave >= 3 && Math.random() < 0.15) {
+                    enemies.push(new Minotaur(x, y)); 
+                } else {
+                    enemies.push(new Enemy(x, y));
+                }
+
+             }, spawnRate);
         }
-
     // --daggersssssss-----
     class Projectile {
         constructor(x, y, velocity) {
@@ -243,35 +274,30 @@
             x: Math.cos(player.angle) * 8,
             y: Math.sin(player.angle) * 8
         };
-        projectiles.push(new Projectile(centerX, centerY, velocity));
+        projectiles.push(new Projectile(centerX, centerY - 40, velocity));
         playPew();
     }
-    window.addEventListener('mousedown', () => {
-        fireDagger();
+        window.addEventListener('click', () => {
+           fireDagger();
+        });
 
-        shootInterval = setInterval(() => {
-            fireDagger();
-        }, 80);
-    });
-    window.addEventListener('mouseup', () => {
-              clearInterval(shootInterval);
-    })
-
+    // --- ZEUS'S WRATH (SPACEBAR) ---
     const cooldownBar = document.getElementById('cooldownBar');
 
     window.addEventListener('keydown', (e) => {
         if (e.code === 'Space' && lightningReady) {
-             
             lightningReady = false;
+            
             score += enemies.length;
             scoreEl.innerHTML = `Monsters Cooked: ${score}`;
             checkWave();
+            
             enemies.length = 0;
             flashAlpha = 1;
             playThunder();
 
             cooldownBar.style.transition = 'none';
-            cooldownBar.style.width = '0%'
+            cooldownBar.style.width = '0%';
 
             setTimeout(() => {
                 cooldownBar.style.transition = 'width 10s linear';
@@ -280,7 +306,6 @@
 
             setTimeout(() => {
                 lightningReady = true;
-
                 const toast = document.getElementById('zeusToast');
                 toast.style.opacity = '1';
 
@@ -329,42 +354,63 @@
                 projectiles.splice(index, 1);
             }
         });
-        enemies.forEach((enemy, enemyIndex) => {
-            enemy.update();
-            projectiles.forEach((proj, projIndex) => {
-               const dist = Math.hypot(proj.x - enemy.x, proj.y - enemy.y);
+         enemies.forEach((enemy, enemyIndex) => {
+                enemy.update();
 
-               if (dist - enemy.size / 2 - proj.radius < 1) {
-                 projectiles.splice(projIndex, 1);
-                 enemies.splice(enemyIndex, 1);
+                projectiles.forEach((proj, projIndex) => {
+                   const dist = Math.hypot(proj.x - enemy.x, proj.y - enemy.y);
 
-                 score += 1;
-                 scoreEl.innerHTML = `Monsters Cooked: ${score}`;
-                 playBoom();
-                 checkWave();
-               }
-            });
-            const distToTree = Math.hypot(centerX - enemy.x, centerY - enemy.y);
-            if (distToTree < 100) {
-                enemies.splice(enemyIndex, 1);
+                   if (dist - enemy.size / 2 - proj.radius < 1) {
+                     projectiles.splice(projIndex, 1);
+
+                     if (enemy.health !== undefined) {
+                        enemy.health -= 1;
+                        enemy.speed += 0.3;
+                        playBoom();
+
+                        if (enemy.health <= 0) {
+                             enemies.splice(enemyIndex, 1);
+                             score += 5;
+                             scoreEl.innerHTML = `Monsters Cooked: ${score}`;
+                             checkWave();
+                        }
+                     } else {
+                         enemies.splice(enemyIndex, 1);
+                         score += 1;
+                         scoreEl.innerHTML = `Monsters Cooked: ${score}`;
+                         playBoom();
+                         checkWave();
+                     }
+                   }
+                });
+                const distToTree = Math.hypot(centerX - enemy.x, centerY - enemy.y);
+                if (distToTree < 100) {
+                    enemies.splice(enemyIndex, 1);
                     health -= 20;
                     healthEl.innerHTML = `Tree Health: ${health}%`;
+                }
+            });
+            if (health <= 0) {
+                healthEl.innerHTML = `Tree's API Credits: 0%`;
+                document.getElementById('finalScore').innerText = `Monsters Cooked: ${score}`;
+                gameOverUI.classList.remove('hidden');
+
+                cancelAnimationFrame(animationId);
+
+                const gameOverAudio = document.getElementById('gameOverAudio');
+                gameOverAudio.currentTime = 0;
+                gameOverAudio.play();
+
+                setTimeout(() => {
+                     gameOverAudio.pause();
+                }, 3500);
             }
-        }); if (health <= 0) {
-            healthEl.innerHTML = `Tree's API Credits: 0%`;
-            document.getElementById('finalScore').innerText = `Monsters Cooked: ${score}`;
-            gameOverUI.classList.remove('hidden');
-
-            cancelAnimationFrame(animationId);
-
-            const gameOverAudio = document.getElementById('gameOverAudio');
-            gameOverAudio.currentTime = 0;
-            gameOverAudio.play();
-            
-            setTimeout(() => {
-                 gameOverAudio.pause();
-            }, 3500);
         }
-    }
-     spawnEnemies();
-    animate();
+
+        // ---button logic --
+        document.getElementById('startBtn').addEventListener('click', () => {
+            document.getElementById('startMenuUI').classList.add('hidden');
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            spawnEnemies();
+            animate();
+        });

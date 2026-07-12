@@ -10,6 +10,20 @@
         <link rel="stylesheet" href="style.css">
     </head>
     <body>
+        <!--start menu dude-->
+        <div id="startMenuUI" style="position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(77, 35, 6, 0.95); z-index: 2000; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; color: #fdf6e3;">
+                <h1 style="font-size: 4rem; color: #ffd700; margin-bottom: 20px; text-shadow: 4px 4px 0px #991b1b;">CAMP HALF-BLOOD</h1>
+
+                <div style="background: rgba(0,0,0,0.5); padding: 30px; border: 4px solid #c5832b; border-radius: 10px; max-width: 800px; text-align: left; line-height: 2; font-size: 1.1rem; box-shadow: 0 0 30px rgba(0,0,0,0.8);">
+            <p style="color: #22c55e;">🌲 <b>DEFEND THE TREE</b>: Don't let them get u gng!</p>
+            <p style="color: #60a5fa;">🐁<b>SHOOTERR</b>: Click rapidly to shoot dagger!</p>
+            <p style="color: #eab308;">🔥<b>ZEUS'S WRATH</b>:Press the spacebar to cook em at once! (10s cooldown)</p>
+            <p style="color: #a7aec4;">💀<b>THE CHIMERA (Grunts)</b>: Weaklings...they die in a hit</p>
+            <p style="color: #ef4444;">🐦<b>THE MINOTAUR (Boss)</b>: Appear once in a while. These take 5 hits to kill, and gets much faster every time you damage it!</p>
+            </div>
+            <button id="startBtn" class="action-btn" style="margin-top: 40px; font-size: 1.5rem; padding: 25px 60px;">START YOUR BATTLE</button> 
+            </div>
+
         <div id="ui-layer">
             <h1 id="scoreEl">Monsters Defeated: 0</h1>
             <h2 id="healthEl">Tree Health: 100%</h2>
